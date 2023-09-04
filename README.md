@@ -23,7 +23,6 @@ You have to create the cache file and the local path (optional) where you want t
 /* create cache */
 var fileCache = FileCache();
 ```
-
 You can use fileCache to get the file path from an url.
 The first time, the cache will get the file from the url, download it & save it.
 The next time you call this method with the same url, the cache will return the local uri of the file.
