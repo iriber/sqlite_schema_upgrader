@@ -1,0 +1,29 @@
+name: file_cache_provider
+description: This package helps your app to cache files when get them from an URI.
+version: 1.0.1
+repository: https://github.com/iriber/file_cache_provider
+
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
+topics:
+  - cache
+  - file
+
+environment:
+  sdk: ^3.0.0
+
+dependencies:
+  crypto: ^3.0.3
+  http: ^1.1.0
+  path: ^1.8.3
+
+dev_dependencies:
+  lints: ^2.0.0
+  test: ^1.21.0
