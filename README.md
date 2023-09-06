@@ -48,5 +48,4 @@ Image getImageLocalPath( ) async {
 }
 ```
 
-## Additional information
 
