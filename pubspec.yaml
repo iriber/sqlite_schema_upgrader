@@ -1,7 +1,7 @@
-name: file_cache_provider
-description: This package helps your app to cache files when get them from an URI.
-version: 1.0.1
-repository: https://github.com/iriber/file_cache_provider
+name: sqlite_schema_upgrader
+description: This package helps your app to upgrade your database schema every time you have to push out a new version of your app.
+version: 1.0.0
+repository: https://github.com/iriber/sqlite_schema_upgrader
 
 # This package supports all platforms listed below.
 platforms:
@@ -13,16 +13,18 @@ platforms:
   windows:
 
 topics:
-  - cache
-  - file
+  - sqlite
+  - database
 
 environment:
   sdk: ^3.0.0
 
 dependencies:
-  crypto: ^3.0.3
-  http: ^1.1.0
+  sqflite: ^2.0.3
   path: ^1.8.3
+  path_provider: ^2.1.1
+  sqflite_common_ffi: ^2.3.0+2
+  sqlite3: ^2.1.0
 
 dev_dependencies:
   lints: ^2.0.0

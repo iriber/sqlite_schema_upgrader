@@ -1,51 +1,98 @@
 
-This package helps your app to cache files when get them from an URI.
+This package helps your app to upgrade your app database schema in cleaned and incremental way.
+
 
 ## Features
 
-FileCache downloads the image and saves it into your local path.
-The next time the app read the same image, it will return the local path.
-
-The Pro is that you manage the downloaded files, you decide when to clear this cache instead
-of the cache managed by the device.
+Use SQLiteSchema to bind onCreate and onUpgrade parameters in the openDatabase SQLite method.
+SQLiteSchema is in charge of upgrade the database schema up to date.
 
 
 ## Getting started
 
-It's very simple to use, you only have to define the cache folder name where you want to save
-the downloaded files.
+It packages implements the Command design pattern.
+
+1) SQLiteSchema: the invoker, it knows the commands to execute to upgrade the database schema.
+2) CommandScript: the command. Create one concrete command for each new version of your database. If in your next build yo have to change your database schema, create a concrete command with the sql script and add it into the SQLiteSchema.
+3) Receiver: Batch. We send the scripts to the Batch to upgrade the database schema.
 
 ## Usage
 
-You have to create the cache file and the local path (optional) where you want to download the files:
+Use SQLiteSchema to bind openDatabase parameters:
 
 ```dart
-/* create cache */
-var fileCache = FileCache();
+import '/src/config/enviroment.dart';
+import '/src/data/sqlite/sqlite_scheme.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+
+/// It manages sqlite database connection.
+class SQLiteDatabase {
+
+  /// Initializes and returns sqlite database connection.
+  Future<Database> initializeDB() async {
+
+    ///gets database location.
+    String path = Environment().config.getAppDocumentsPath();
+
+    ///You must indicate what to do onCreate and what onUpdate
+    ///and our SQLiteSchema is the one who is in charge of that.
+    return openDatabase(
+        join(path, 'myapp_database.db'),
+        onCreate: (database, version) async {
+          SQLiteSchema().create(database, version);
+        },
+        onUpgrade: (db, oldVersion, newVersion) async {
+          SQLiteSchema().upgrade(db, oldVersion, newVersion);
+        },
+        version: Environment().config.appDatabaseVersion
+    );
+  }
+
+}
 ```
-You can use fileCache to get the file path from an url.
-The first time, the cache will get the file from the url, download it & save it.
-The next time you call this method with the same url, the cache will return the local uri of the file.
+Then you have to create Commands.
+For this example, I created two concrete commands:
+
+* CommanScriptV1: it creates the first version of database schema. It creates the table “LogData”
+* CommandScriptV2: it upgrades the database schema, it alters LogData table adding one more column.
 
 ```dart
-/* Example: get an image from cache */
-Image getImageLocalPath( ) async {
- 
-  // get file path from cache
-  String imagePath = await fileCache.getFilePath(url);
+import '/src/data/sqlite/command_script.dart';
+import '/src/data/sqlite/sqlite_scheme.dart';
 
-  /* and then you can create an image from the imagePath (local uri) */
-  Image image = Image.file(File(imagePath));
-  image.image.resolve(ImageConfiguration()).addListener(
-    ImageStreamListener((ImageInfo image, bool synchronousCall) {
-      var myImage = image.image;
-      Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
-      completer.complete(ImageCacheInfo(size, imagePath));
-    },
-    ),
-  );
-  return image;
+/**
+ * Command to create the first version of the database.
+ */
+class CommandScriptV1 extends CommandScript{
+
+  Future<void> execute(Batch batch) async {
+    batch.execute("CREATE TABLE log_data (id INTEGER PRIMARY KEY AUTOINCREMENT,"
+        " message TEXT NOT NULL, datetime INTEGER)");
+    }
+
 }
 ```
 
+```dart
+import '/src/data/sqlite/command_script.dart';
+import '/src/data/sqlite/sqlite_scheme.dart';
 
+/**
+ * Command to update datbase schema to v2.
+ */
+class CommandScriptV2 extends CommandScript{
+
+  Future<void> execute(Batch batch) async {
+    batch.execute("ALTER TABLE log_data ADD level INTEGER");
+  }
+}
+```
+
+Then assign those commands to sqliteSchema indicating the version
+
+```dart
+SQLiteSchema sqliteSchema = SQLiteSchema();
+sqliteSchema.setCommand(1, CommandScriptV1());
+sqliteSchema.setCommand(2, CommandScriptV2());
+```

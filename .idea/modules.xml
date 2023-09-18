@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/file_cache_provider.iml" filepath="$PROJECT_DIR$/.idea/file_cache_provider.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/sqlite_schema_upgrader.iml" filepath="$PROJECT_DIR$/.idea/sqlite_schema_upgrader.iml" />
     </modules>
   </component>
 </project>
