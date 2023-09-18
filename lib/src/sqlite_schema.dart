@@ -1,12 +1,11 @@
 import 'dart:collection';
-import 'dart:developer';
 
 import '/src/command_script.dart';
 import 'package:sqflite/sqflite.dart';
 
-/**
- * This class create the sqlite schema and manage the upgrading.
- */
+///
+/// This class create the sqlite schema and manage the upgrading.
+///
 class SQLiteSchema{
 
   factory SQLiteSchema() {
