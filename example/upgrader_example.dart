@@ -15,8 +15,6 @@ void main() async{
   //initialize and get the connection.
   Database database = await SQLiteDatabase().initializeDB(2);
 
-  database.execute("select * from log_data");
-
   final List<Map<String, Object?>> queryResult =
   await database.query("select * from log_data");
   Map<String, dynamic> logItem = queryResult.first;
