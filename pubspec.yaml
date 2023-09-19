@@ -1,16 +1,7 @@
 name: sqlite_schema_upgrader
 description: This package helps your app to upgrade your database schema every time you have to push out a new version of your app.
-version: 1.0.1
+version: 1.0.6
 repository: https://github.com/iriber/sqlite_schema_upgrader
-
-# This package supports all platforms listed below.
-platforms:
-  android:
-  ios:
-  linux:
-  macos:
-  web:
-  windows:
 
 topics:
   - sqlite
@@ -20,8 +11,9 @@ environment:
   sdk: ^3.0.0
 
 dependencies:
+  flutter:
+    sdk: flutter
   sqflite: ^2.0.3
-  path: ^1.8.3
   sqflite_common_ffi: ^2.3.0+2
   sqlite3: ^2.1.0
 

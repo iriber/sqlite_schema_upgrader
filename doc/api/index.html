@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="generator" content="made with love by dartdoc 6.2.1">
+  <meta name="description" content="sqlite_schema_upgrader API docs, for the Dart programming language.">
+  <title>sqlite_schema_upgrader - Dart API docs</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="static-assets/github.css?v1">
+  <link rel="stylesheet" href="static-assets/styles.css?v1">
+  <link rel="icon" href="static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li class="self-crumb">sqlite_schema_upgrader package</li>
+  </ol>
+  <div class="self-name">sqlite_schema_upgrader</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        brightness_4
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        brightness_5
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div id="dartdoc-main-content" class="main-content">
+      
+<section class="desc markdown">
+  <p>This package helps your app to upgrade your app database schema in cleaned and incremental way.</p>
+<h2 id="features">Features</h2>
+<p>Use SQLiteSchema to bind onCreate and onUpgrade parameters in the openDatabase SQLite method.
+SQLiteSchema is in charge of upgrade the database schema up to date.</p>
+<h2 id="getting-started">Getting started</h2>
+<p>It packages implements the Command design pattern.</p>
+<ol>
+<li>SQLiteSchema: the invoker, it knows the commands to execute to upgrade the database schema.</li>
+<li>CommandScript: the command. Create one concrete command for each new version of your database. If in your next build yo have to change your database schema, create a concrete command with the sql script and add it into the SQLiteSchema.</li>
+<li>Receiver: Batch. We send the scripts to the Batch to upgrade the database schema.</li>
+</ol>
+<h2 id="usage">Usage</h2>
+<p>Use SQLiteSchema to bind openDatabase parameters:</p>
+<pre class="language-dart"><code class="language-dart">import '/src/config/enviroment.dart';
+import '/src/data/sqlite/sqlite_scheme.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+
+/// It manages sqlite database connection.
+class SQLiteDatabase {
+
+  /// Initializes and returns sqlite database connection.
+  Future&lt;Database&gt; initializeDB() async {
+
+    ///gets database location.
+    String path = Environment().config.getAppDocumentsPath();
+
+    ///You must indicate what to do onCreate and what onUpdate
+    ///and our SQLiteSchema is the one who is in charge of that.
+    return openDatabase(
+        join(path, 'myapp_database.db'),
+        onCreate: (database, version) async {
+          SQLiteSchema().create(database, version);
+        },
+        onUpgrade: (db, oldVersion, newVersion) async {
+          SQLiteSchema().upgrade(db, oldVersion, newVersion);
+        },
+        version: Environment().config.appDatabaseVersion
+    );
+  }
+
+}
+</code></pre>
+<p>Then you have to create Commands.
+For this example, I created two concrete commands:</p>
+<ul>
+<li>CommanScriptV1: it creates the first version of database schema. It creates the table “LogData”</li>
+<li>CommandScriptV2: it upgrades the database schema, it alters LogData table adding one more column.</li>
+</ul>
+<pre class="language-dart"><code class="language-dart">import '/src/data/sqlite/command_script.dart';
+import '/src/data/sqlite/sqlite_scheme.dart';
+
+/**
+ * Command to create the first version of the database.
+ */
+class CommandScriptV1 extends CommandScript{
+
+  Future&lt;void&gt; execute(Batch batch) async {
+    batch.execute("CREATE TABLE log_data (id INTEGER PRIMARY KEY AUTOINCREMENT,"
+        " message TEXT NOT NULL, datetime INTEGER)");
+    }
+
+}
+</code></pre>
+<pre class="language-dart"><code class="language-dart">import '/src/data/sqlite/command_script.dart';
+import '/src/data/sqlite/sqlite_scheme.dart';
+
+/**
+ * Command to update datbase schema to v2.
+ */
+class CommandScriptV2 extends CommandScript{
+
+  Future&lt;void&gt; execute(Batch batch) async {
+    batch.execute("ALTER TABLE log_data ADD level INTEGER");
+  }
+}
+</code></pre>
+<p>Then assign those commands to sqliteSchema indicating the version</p>
+<pre class="language-dart"><code class="language-dart">SQLiteSchema sqliteSchema = SQLiteSchema();
+sqliteSchema.setCommand(1, CommandScriptV1());
+sqliteSchema.setCommand(2, CommandScriptV2());
+</code></pre>
+</section>
+
+
+      <section class="summary">
+          <h2>Libraries</h2>
+        <dl>
+          <dt id="sqlite_schema_upgrader">
+  <span class="name"><a href="sqlite_schema_upgrader/sqlite_schema_upgrader-library.html">sqlite_schema_upgrader</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+        </dl>
+      </section>
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+  <li class="self-crumb">sqlite_schema_upgrader package</li>
+</ol>
+
+
+    <h5 class="hidden-xs"><span class="package-name">sqlite_schema_upgrader</span> <span class="package-kind">package</span></h5>
+    <ol>
+      <li class="section-title">Libraries</li>
+      <li><a href="sqlite_schema_upgrader/sqlite_schema_upgrader-library.html">sqlite_schema_upgrader</a></li>
+</ol>
+
+  </div>
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div>
+
+</main>
+
+<footer>
+  <span class="no-break">
+    sqlite_schema_upgrader
+      1.0.5
+  </span>
+
+  
+</footer>
+
+
+
+<script src="static-assets/highlight.pack.js?v1"></script>
+<script src="static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+
