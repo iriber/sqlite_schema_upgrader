@@ -1,5 +1,5 @@
 import 'dart:collection';
-import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common/sqflite.dart';
 
 import 'command_script.dart';
 
