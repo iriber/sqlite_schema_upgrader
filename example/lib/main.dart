@@ -65,7 +65,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   String lastMessage = "";
 
   void _incrementCounter() async {
@@ -126,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
               'Log message:',
             ),
             Text(
-              '$lastMessage',
+              lastMessage,
               style: Theme.of(context).textTheme.headlineMedium,
             ),
           ],
