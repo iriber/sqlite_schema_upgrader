@@ -6,4 +6,10 @@
 # https://dart.dev/guides/libraries/private-files#pubspeclock.
 pubspec.lock
 
+# Dart Doc files. To re-generate, run `dart doc`.
 doc/
+
+# Flutter test files
+.flutter-plugins
+.flutter-plugins-dependencies
+build/
